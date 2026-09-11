@@ -72,16 +72,63 @@ dense side. Two honest fixes are implemented. Linear fusion squashes both to a
 combines only the *ranks*, which is why it needs no tuning and is the usual
 production default.
 
-## What the numbers show
+## What the numbers actually showed
 
-Run `evaluate.py` for the live table. The shape to look for:
+Retrieval method, chunking held at sentence-450:
 
-- BM25 scores near perfect on the rare-jargon queries and poorly on paraphrases.
-- Dense does the reverse.
-- Hybrid should beat both overall while giving up a little on each specialty.
+```
+method                          semantic  lexical   mixed   ALL mrr     r@5
+BM25 only                          0.538    1.000   1.000     0.830   0.947
+dense only                         0.774    0.903   0.958     0.873   0.974
+hybrid, RRF                        0.673    0.958   1.000     0.866   1.000
+hybrid, linear a=0.5               0.714    1.000   0.958     0.882   1.000
+hybrid, linear a=0.7               0.804    1.000   0.958     0.914   1.000
+```
 
-If hybrid does *not* beat both, that is a real finding worth investigating, not
-a reason to quietly drop the comparison.
+Best combination found, sweeping chunking and fusion together:
+
+```
+fixed-400 + linear a=0.7           0.863    1.000   1.000     0.950   1.000
+fixed-400-overlap + linear a=0.7   0.848    1.000   1.000     0.944   1.000
+paragraph + linear a=0.7           0.833    1.000   1.000     0.939   0.974
+sentence-450 + RRF                 0.673    0.958   1.000     0.866   1.000
+```
+
+Four things here are worth more than the headline number.
+
+**BM25's semantic column is the whole reason this project exists.** It scores
+0.538 on paraphrases against 1.000 on jargon. Dense retrieval nearly closes that
+gap, reaching 0.774, and the best hybrid reaches 0.863.
+
+**Reciprocal rank fusion lost to linear fusion, badly.** RRF at 0.866 is *worse
+than dense alone* at 0.873. RRF throws away score magnitudes and keeps only
+ranks, which is exactly what protects it from scale mismatch in production, but
+that discarding costs real information. With only 12 documents, BM25 confidently
+ranking something first counts the same as it barely preferring it. The usual
+production default is not the best choice at this scale, and only measurement
+revealed that.
+
+**The best chunking strategy was the ugly one.** Fixed 400-character windows,
+which cut sentences in half, beat careful sentence-aware chunking. Plausibly the
+smaller, more uniform chunks give sharper embeddings, and cutting mid-sentence
+hurts a human reader far more than it hurts a cosine similarity. If these chunks
+were being shown to a user as citations, the ranking might well reverse.
+
+**Recall@5 hit 1.000 for every hybrid configuration.** That metric is saturated
+and now useless here. With 12 documents and k=5, finding the right one in the
+top five is too easy. Only MRR still discriminates. A metric that cannot
+distinguish your options has stopped doing its job.
+
+## The honest caveat
+
+Every number above was measured on the same 38 queries that guided every choice
+of chunk size, fusion method and alpha. That set has been fitted to. The gain
+from 0.866 to 0.950 is partly real and partly the tuning showing up in its own
+scorecard, and there is no way to tell the two apart from this table alone.
+
+`doc-evaluation` in the corpus warns about exactly this, which is a convenient
+irony. The fix is a held-out set of queries written before tuning and looked at
+once at the end. Stretch task 7 is where you build one.
 
 ## Stretch tasks
 
