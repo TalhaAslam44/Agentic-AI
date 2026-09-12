@@ -87,3 +87,8 @@ if __name__ == "__main__":
     for i, (a, b) in enumerate(pairs):
         sim = float(vecs[2 * i] @ vecs[2 * i + 1])
         print(f"  {sim:+.3f}  {a!r}\n          {b!r}")
+
+# embeddings are unit length, so the dot product is cosine similarity. A
+# similarity of 1 means the two texts are identical in meaning, 0 means they
+# are orthogonal, and -1 means they are diametrically opposed. The model is
+# trained so that paraphrases land near 1, and unrelated texts land near 0.
