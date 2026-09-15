@@ -1,10 +1,12 @@
 """Exercise 1: build a chatbot that remembers. YOU write this one.
 
-Run:  python exercise1_chat.py
+Run from inside the 03-agentic-rag folder:
+    cd 03-agentic-rag
+    python exercise1_chat.py
 
 Goal
 ----
-A loop in the terminal. You type, Claude answers, and Claude remembers what
+A loop in the terminal. You type, Gemini answers, and Gemini remembers what
 you said earlier in the conversation.
 
 Test that memory works:
@@ -21,25 +23,31 @@ Here the list grows.
 Fill in the four TODOs. Nothing else needs changing.
 """
 
-import anthropic
+from google import genai
+from google.genai import types
 
-client = anthropic.Anthropic()
-MODEL = "claude-opus-5"
+from config import MODEL
+
+client = genai.Client()
 SYSTEM = "You are a friendly tutor. Keep answers short."
 
 
 def ask(history):
     """Send the whole history, return (reply_text, usage). Already written for you."""
-    response = client.beta.messages.create(
+    response = client.models.generate_content(
         model=MODEL,
-        max_tokens=2000,
-        system=SYSTEM,
-        messages=history,
-        betas=["server-side-fallback-2026-07-01"],
-        fallbacks="default",
+        contents=history,
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM,
+            max_output_tokens=4000,
+            # Turn off the SDK's automatic tool running. We will run tools ourselves
+            # in Step 6, because writing that loop by hand is the whole lesson.
+            automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
+        ),
     )
-    text = "".join(b.text for b in response.content if b.type == "text")
-    return text, response.usage
+    parts = response.candidates[0].content.parts or []
+    text = "".join(p.text for p in parts if p.text and not p.thought)
+    return text, response.usage_metadata
 
 
 def main():
@@ -53,16 +61,17 @@ def main():
             break
 
         # TODO 2: append the user's message to history.
-        #         Shape: {"role": "user", "content": user_text}
+        #         Shape: {"role": "user", "parts": [{"text": user_text}]}
 
         reply, usage = ask(history)
-        print(f"claude> {reply}")
+        print(f"gemini> {reply}")
 
-        # TODO 3: append Claude's reply to history, with role "assistant".
-        #         If you skip this, what does Claude see on the next turn?
+        # TODO 3: append the model's reply to history, with role "model".
+        #         Same shape as TODO 2. If you skip this, what does the
+        #         model see on the next turn?
 
-        # TODO 4: add usage.input_tokens to total_input_tokens, then print
-        #         the turn number, this turn's input tokens, and the total.
+        # TODO 4: add usage.prompt_token_count to total_input_tokens, then
+        #         print the turn number, this turn's input tokens, and the total.
 
     print(f"\nconversation over. total input tokens: {total_input_tokens}")
 

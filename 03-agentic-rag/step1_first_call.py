@@ -1,21 +1,24 @@
 """Step 1: talk to a language model, and look at everything that comes back.
 
-Run:  python step1_first_call.py
+Run from inside the 03-agentic-rag folder:
+    cd 03-agentic-rag
+    python step1_first_call.py
 
 Read this file top to bottom before running it. Every line is here on purpose.
 """
 
-import anthropic
+from google import genai
+from google.genai import types
+
+from config import MODEL
 
 # ---------------------------------------------------------------------------
 # 1. The client
 # ---------------------------------------------------------------------------
-# The client reads your key from the ANTHROPIC_API_KEY environment variable.
+# The client reads your key from the GEMINI_API_KEY environment variable.
 # Never paste a key into source code: this repo is on GitHub, and bots scan
 # public repos for leaked keys within minutes.
-client = anthropic.Anthropic()
-
-MODEL = "claude-opus-5"
+client = genai.Client()
 
 # ---------------------------------------------------------------------------
 # 2. The request
@@ -24,52 +27,62 @@ MODEL = "claude-opus-5"
 # Every request carries the ENTIRE conversation so far, as a list of messages.
 # "Memory" in a chatbot is just your code resending the history each time.
 #
-#   system    who the model is and the rules it follows. Set by you, the builder.
-#   messages  the conversation. Roles alternate "user" and "assistant".
-#   max_tokens  a hard ceiling on the length of the reply. Hit it and the reply
-#               is cut off mid-sentence, so do not set it low to save money.
-response = client.beta.messages.create(
+#   system_instruction  who the model is and the rules it follows. Set by you.
+#   contents            the conversation. Roles alternate "user" and "model".
+#                       (Anthropic and OpenAI call the second role "assistant".
+#                       Same idea, different word.)
+#   max_output_tokens   a hard ceiling on the reply. Hit it and the reply is cut
+#                       off. On thinking models, the hidden reasoning ALSO
+#                       counts against it, so do not set it low.
+response = client.models.generate_content(
     model=MODEL,
-    max_tokens=2000,
-    system="You are a concise tutor. Answer in at most three sentences.",
-    messages=[
-        {"role": "user", "content": "What is retrieval augmented generation?"},
+    contents=[
+        {"role": "user", "parts": [{"text": "What is retrieval augmented generation?"}]},
     ],
-    # If a safety check declines the request, rerun it on a fallback model
-    # instead of failing. You can ignore these two lines while learning.
-    betas=["server-side-fallback-2026-07-01"],
-    fallbacks="default",
+    config=types.GenerateContentConfig(
+        system_instruction="You are a concise tutor. Answer in at most three sentences.",
+        max_output_tokens=4000,
+        # Turn off the SDK's automatic tool running. We will run tools ourselves
+        # in Step 6, because writing that loop by hand is the whole lesson.
+        automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
+    ),
 )
 
 # ---------------------------------------------------------------------------
 # 3. The response: check WHY it stopped before trusting WHAT it said
 # ---------------------------------------------------------------------------
-# stop_reason is the single most important field in agentic code.
-#   end_turn    the model finished its answer normally
-#   max_tokens  it ran out of room; the answer is truncated
-#   tool_use    it wants YOU to run a tool (Step 5, this is where agents begin)
-#   refusal     it declined the request
-print("stop_reason:", response.stop_reason)
-if response.stop_reason == "max_tokens":
-    print("WARNING: reply was cut off, raise max_tokens")
+# The response can hold several candidate answers. We asked for one.
+candidate = response.candidates[0]
 
-# content is a LIST of blocks, not a string. A reply can contain several kinds
-# of block: text, thinking, and later tool_use. Always check the type.
-print("\nblocks returned:", [block.type for block in response.content])
+# finish_reason is the single most important field in agentic code.
+#   STOP        the model finished its answer normally
+#   MAX_TOKENS  it ran out of room; the answer is truncated or even empty
+#   SAFETY      a safety filter blocked the answer
+# In Step 5 you will also see the model ask YOU to run a tool instead of
+# answering. That moment is where agents begin.
+print("finish_reason:", candidate.finish_reason.name)
+if candidate.finish_reason.name == "MAX_TOKENS":
+    print("WARNING: reply was cut off, raise max_output_tokens")
 
-answer = "".join(block.text for block in response.content if block.type == "text")
-print("\nanswer:\n" + answer)
+# The answer is a list of PARTS, not a string. A reply can contain text parts,
+# thought parts, and later function_call parts. Always check what each part is.
+parts = candidate.content.parts or []
+print("\nparts returned:", ["thought" if p.thought else "text" if p.text else "other" for p in parts])
+
+answer = "".join(p.text for p in parts if p.text and not p.thought)
+print("\nanswer:\n" + (answer or "(no text came back)"))
 
 # ---------------------------------------------------------------------------
-# 4. Usage: you pay per token, in and out
+# 4. Usage: every token counts, in and out
 # ---------------------------------------------------------------------------
-# Input tokens are everything you sent: system prompt plus full history.
+# Input tokens are everything you sent: system instruction plus full history.
 # In a long chat or an agent loop, input grows every turn because the whole
 # history is resent. That is the hidden cost curve of agents.
-usage = response.usage
-print(f"\ninput tokens:  {usage.input_tokens}")
-print(f"output tokens: {usage.output_tokens}")
-
-# Opus 5 pricing: $5 per million input tokens, $25 per million output tokens.
-cost = usage.input_tokens * 5 / 1_000_000 + usage.output_tokens * 25 / 1_000_000
-print(f"cost of this call: ${cost:.5f}")
+#
+# The free tier costs nothing, but it limits requests per minute and per day.
+# Go over and you get a 429 error. Paid APIs bill by these same token counts.
+usage = response.usage_metadata
+print(f"\ninput tokens:     {usage.prompt_token_count}")
+print(f"thinking tokens:  {usage.thoughts_token_count or 0}   (hidden reasoning)")
+print(f"answer tokens:    {usage.candidates_token_count or 0}")
+print(f"total tokens:     {usage.total_token_count}")
