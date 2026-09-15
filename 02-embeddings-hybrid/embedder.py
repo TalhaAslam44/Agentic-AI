@@ -91,4 +91,4 @@ if __name__ == "__main__":
 # embeddings are unit length, so the dot product is cosine similarity. A
 # similarity of 1 means the two texts are identical in meaning, 0 means they
 # are orthogonal, and -1 means they are diametrically opposed. The model is
-# trained so that paraphrases land near 1, and unrelated texts land near 0.
+# trained so that paraphrases land near 1, and unrelated texts land near 0
