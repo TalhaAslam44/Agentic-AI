@@ -55,7 +55,7 @@ def main():
     history = []
 
     total_input_tokens = 0
-    
+    turn = 0
     while True:
         user_text = input("\nyou> ").strip()
         if not user_text:
@@ -67,9 +67,10 @@ def main():
         print(f"gemini> {reply}")
 
         history.append({"role": "model", "parts": [{"text": reply}]})
-
-        total_input_tokens += usage.input_tokens
-
+        print(usage)
+        turn += 1
+        total_input_tokens += usage.prompt_token_count
+        print(f"[turn {turn}] input tokens this turn: {usage.prompt_token_count}, total so far: {total_input_tokens}")
     print(f"\nconversation over. total input tokens: {total_input_tokens}")
 
 
