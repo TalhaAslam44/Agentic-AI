@@ -51,27 +51,24 @@ def ask(history):
 
 
 def main():
-    # TODO 1: create an empty list called history.
+    
+    history = []
 
     total_input_tokens = 0
-
+    
     while True:
         user_text = input("\nyou> ").strip()
         if not user_text:
             break
 
-        # TODO 2: append the user's message to history.
-        #         Shape: {"role": "user", "parts": [{"text": user_text}]}
+        history.append({"role": "user", "parts": [{"text": user_text}]})
 
         reply, usage = ask(history)
         print(f"gemini> {reply}")
 
-        # TODO 3: append the model's reply to history, with role "model".
-        #         Same shape as TODO 2. If you skip this, what does the
-        #         model see on the next turn?
+        history.append({"role": "model", "parts": [{"text": reply}]})
 
-        # TODO 4: add usage.prompt_token_count to total_input_tokens, then
-        #         print the turn number, this turn's input tokens, and the total.
+        total_input_tokens += usage.input_tokens
 
     print(f"\nconversation over. total input tokens: {total_input_tokens}")
 
