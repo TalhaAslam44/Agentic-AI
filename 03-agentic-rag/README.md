@@ -1,6 +1,6 @@
 # Project 3 — Agentic RAG, built step by step
 
-Take the retriever from Project 2, connect it to Claude, and grow it from a
+Take the retriever from Project 2, connect it to Gemini, and grow it from a
 fixed pipeline into an agent that decides for itself when and what to search.
 
 Built in small steps. Each step has a file I write that teaches the concept,
@@ -8,13 +8,23 @@ and an exercise you write that proves you have it. Do not skip an exercise.
 
 ## Setup
 
-Get an API key at console.anthropic.com, then set it for your terminal session:
+Get a free API key at aistudio.google.com, then set it for your terminal session:
 
 ```powershell
-$env:ANTHROPIC_API_KEY = "sk-ant-..."
+$env:GEMINI_API_KEY = "your-key-here"
 ```
 
-Never put the key in a file inside this repo.
+Never put the key in a file inside this repo. The setting lasts until you close
+the terminal.
+
+Run every step from inside this folder:
+
+```powershell
+cd 03-agentic-rag
+```
+
+The free tier limits requests per minute and per day. A 429 error means you hit
+that limit, so wait a minute and retry.
 
 ## The steps
 
@@ -31,5 +41,6 @@ Never put the key in a file inside this repo.
 
 ## Step 1 files
 
+- `step0_list_models.py` — confirm your key works and pick a model name for `config.py`
 - `step1_first_call.py` — read it, run it, study the output
 - `exercise1_chat.py` — fill in four TODOs to make a chatbot with memory
