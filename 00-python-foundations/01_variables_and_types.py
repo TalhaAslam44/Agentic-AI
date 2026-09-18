@@ -44,7 +44,7 @@ print("=" * 60)
 print("2. CORE DATA TYPES")
 print("=" * 60)
 
-count = 10  # int: whole numbers, unlimited size in Python
+count = 100  # int: whole numbers, unlimited size in Python
 temperature = 0.7  # float: decimals (the LLM "temperature" setting is a float!)
 is_ready = True  # bool: True / False (capitalized)
 model_name = "claude"  # str: text
