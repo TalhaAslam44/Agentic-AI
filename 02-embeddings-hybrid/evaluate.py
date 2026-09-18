@@ -90,4 +90,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-# final
+# final output is a table of MRR scores for each retrieval method and chunking strategy, along with the best overall configuration and any queries it still misses.
