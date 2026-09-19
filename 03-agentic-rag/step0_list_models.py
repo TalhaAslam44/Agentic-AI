@@ -32,3 +32,6 @@ for name in sorted(names):
 if MODEL not in names:
     print(f"\nWARNING: config.py uses '{MODEL}', which is not in this list.")
     print("Pick a 'flash' model from above and set it in config.py.")
+
+#models picking up the most recent models from the list above, as of June 2024:
+#  - Gemini 1.5 (flash)  --> "gemini-1.5-flash"
