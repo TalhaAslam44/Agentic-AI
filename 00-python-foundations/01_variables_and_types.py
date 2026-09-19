@@ -32,7 +32,7 @@ print("type :", type(age))
 print("id   :", id(age))  # a memory address-like number
 
 # Two names can point at the SAME object:
-a = [1, 2, 3]
+a = [1, 2, 3, 4]
 b = a  # b does NOT copy the list; it's a second label on the same object
 b.append(4)
 print("a after b.append(4):", a)  # [1, 2, 3, 4]  <- surprised? a and b are the same list
@@ -44,7 +44,7 @@ print("=" * 60)
 print("2. CORE DATA TYPES")
 print("=" * 60)
 
-count = 10  # int: whole numbers, unlimited size in Python
+count = 100  # int: whole numbers, unlimited size in Python
 temperature = 0.7  # float: decimals (the LLM "temperature" setting is a float!)
 is_ready = True  # bool: True / False (capitalized)
 model_name = "claude"  # str: text

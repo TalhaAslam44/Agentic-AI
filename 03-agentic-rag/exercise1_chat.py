@@ -76,3 +76,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+ 
+# what happens if you run this script and type "my name is Talha" followed by "what is my name?"
