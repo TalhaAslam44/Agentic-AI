@@ -46,7 +46,3 @@ if __name__ == "__main__":
     for chunk, score in search("why is attention quadratic", k=3):
         print(f"[{score:.3f}] {chunk.chunk_id}")
         print(f"  {chunk.text[:120]}...\n")
-
-
-# references:
-# - Project 2: 02-embeddings-hybrid/corpus.py, index.py
