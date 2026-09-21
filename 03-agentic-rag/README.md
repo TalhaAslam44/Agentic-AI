@@ -39,8 +39,14 @@ that limit, so wait a minute and retry.
 | 7 | Multi-step search, iteration limits, budgets | Planning and autonomy limits |
 | 8 | Tracing, then naive RAG versus agentic RAG | Observability, and when agents are worth it |
 
-## Step 1 files
+## Files
 
+Step 1
 - `step0_list_models.py` — confirm your key works and pick a model name for `config.py`
 - `step1_first_call.py` — read it, run it, study the output
 - `exercise1_chat.py` — fill in four TODOs to make a chatbot with memory
+
+Step 2
+- `retrieval.py` — bridge to the Project 2 retriever, run it alone to test search
+- `step2_naive_rag.py` — the same question asked with and without context
+- `exercise2_rag_cli.py` — you write `build_prompt`, the heart of RAG
