@@ -18,7 +18,7 @@ print("=" * 60)
 single = 'Hello'
 double = "It's easy"  # use double quotes when the text has an apostrophe
 multi = """You are a helpful assistant.
-Answer concisely."""  # triple quotes allow multiple lines, common for system prompts
+Answer concisely.."""  # triple quotes allow multiple lines, common for system prompts
 print(multi)
 
 print("Line1\nLine2\tTabbed")  # \n newline, \t tab
