@@ -32,7 +32,7 @@ print("type :", type(age))
 print("id   :", id(age))  # a memory address-like number
 
 # Two names can point at the SAME object:
-a = [1, 2, 3, 4]
+a = [1, 2, 3, 4, 5]
 b = a  # b does NOT copy the list; it's a second label on the same object
 b.append(4)
 print("a after b.append(4):", a)  # [1, 2, 3, 4]  <- surprised? a and b are the same list

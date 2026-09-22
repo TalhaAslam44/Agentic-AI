@@ -90,7 +90,7 @@ print("=" * 60)
 print("4. F-STRINGS (formatted string literals)")
 print("=" * 60)
 
-user = "Talha"
+user = "Talhaa"
 score = 0.87654
 tokens = 1234567
 
