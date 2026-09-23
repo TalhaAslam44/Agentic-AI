@@ -76,7 +76,7 @@ print("=" * 60)
 # IMMUTABLE: int, float, bool, str, tuple, None. The object can't change.
 # MUTABLE:   list, dict, set, most custom objects. The object CAN change in place.
 
-x = 10
+x = 100
 print("id(x) before:", id(x))
 x = x + 1  # this does NOT modify 10; it creates a NEW object 11 and moves the label
 print("id(x) after :", id(x), "(different object)")

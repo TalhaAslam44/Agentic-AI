@@ -92,7 +92,7 @@ print("=" * 60)
 
 user = "Talhaa"
 score = 0.87654
-tokens = 1234567
+tokens = 12345678
 
 print(f"Hello {user}!")
 print(f"Score: {score:.2f}")  # 2 decimal places -> 0.88
