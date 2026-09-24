@@ -15,7 +15,7 @@ print("=" * 60)
 print("1. LISTS: ordered, mutable, can hold anything")
 print("=" * 60)
 
-models = ["claude", "llama", "mistral"]
+models = ["claude", "llama", "mistral", "Grok"]
 mixed = [1, "two", 3.0, True, None, [5, 6]]  # allowed, but usually keep one type
 print(models, len(models))
 print(models[0], models[-1], models[0:2])

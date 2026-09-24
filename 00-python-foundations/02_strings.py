@@ -16,7 +16,7 @@ print("1. CREATING STRINGS")
 print("=" * 60)
 
 single = 'HOlA'
-double = "It's easy"  # use double quotes when the text has an apostrophe
+double = "It's super easy"  # use double quotes when the text has an apostrophe
 multi = """You are a helpful assistant.
 Answer concisely.."""  # triple quotes allow multiple lines, common for system prompts
 print(multi)
