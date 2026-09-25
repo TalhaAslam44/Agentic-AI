@@ -5,7 +5,7 @@ Run:  python 00-python-foundations/02_strings.py
 
 What you'll learn:
   1. Creating strings (quotes, multi-line, escape chars, raw strings)
-  2. Indexing and slicing (and how it works inside)
+  2. Indexing and slicing (and how it works inside and outside)
   3. Essential string methods
   4. f-strings (formatting), the tool you'll use for prompt templates
   5. Unicode, encoding, and why "length" isn't "tokens"
